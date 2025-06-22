@@ -338,17 +338,27 @@ def process_all_files(root_dir):
             print(f"警告: {dataset}/{model} 没有成功的折")
             continue
         
-        # 计算各项指标的平均值
+        # 计算各项指标的平均值和方差
         avg_auc_std = success_group['auc_std'].mean()
+        var_auc_std = success_group['auc_std'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_auc_mean = success_group['auc_mean'].mean()
+        var_auc_mean = success_group['auc_mean'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_auc_max = success_group['auc_max'].mean()
+        var_auc_max = success_group['auc_max'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_auc_min = success_group['auc_min'].mean()
+        var_auc_min = success_group['auc_min'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_auc_range = success_group['auc_range'].mean()
+        var_auc_range = success_group['auc_range'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_acc_mean = success_group['acc_mean'].mean()
+        var_acc_mean = success_group['acc_mean'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_acc_std = success_group['acc_std'].mean()
+        var_acc_std = success_group['acc_std'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_acc_max = success_group['acc_max'].mean()
+        var_acc_max = success_group['acc_max'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_acc_min = success_group['acc_min'].mean()
+        var_acc_min = success_group['acc_min'].var(ddof=1) if len(success_group) > 1 else 0.0
         avg_acc_range = success_group['acc_range'].mean()
+        var_acc_range = success_group['acc_range'].var(ddof=1) if len(success_group) > 1 else 0.0
         total_students = success_group['n_students'].sum()
         n_successful_folds = len(success_group)
         
@@ -356,15 +366,25 @@ def process_all_files(root_dir):
             'dataset': dataset,
             'model': model,
             'avg_auc_std': avg_auc_std,
+            'var_auc_std': var_auc_std,
             'avg_auc_mean': avg_auc_mean,
+            'var_auc_mean': var_auc_mean,
             'avg_auc_max': avg_auc_max,
+            'var_auc_max': var_auc_max,
             'avg_auc_min': avg_auc_min,
+            'var_auc_min': var_auc_min,
             'avg_auc_range': avg_auc_range,
+            'var_auc_range': var_auc_range,
             'avg_acc_mean': avg_acc_mean,
+            'var_acc_mean': var_acc_mean,
             'avg_acc_std': avg_acc_std,
+            'var_acc_std': var_acc_std,
             'avg_acc_max': avg_acc_max,
+            'var_acc_max': var_acc_max,
             'avg_acc_min': avg_acc_min,
+            'var_acc_min': var_acc_min,
             'avg_acc_range': avg_acc_range,
+            'var_acc_range': var_acc_range,
             'total_students': total_students,
             'n_successful_folds': n_successful_folds,
             'success_rate': n_successful_folds / 5.0
@@ -395,11 +415,21 @@ def process_all_files(root_dir):
     print(f"平均值: {final_df['avg_auc_std'].mean():.4f}")
     print(f"标准差: {final_df['avg_auc_std'].std():.4f}")
     
+    print(f"\nAUC标准差的5折方差统计:")
+    print(f"最小值: {final_df['var_auc_std'].min():.4f}")
+    print(f"最大值: {final_df['var_auc_std'].max():.4f}")
+    print(f"平均值: {final_df['var_auc_std'].mean():.4f}")
+    
     print(f"\n平均AUC差值统计:")
     print(f"最小值: {final_df['avg_auc_range'].min():.4f}")
     print(f"最大值: {final_df['avg_auc_range'].max():.4f}")
     print(f"平均值: {final_df['avg_auc_range'].mean():.4f}")
     print(f"标准差: {final_df['avg_auc_range'].std():.4f}")
+    
+    print(f"\nAUC差值的5折方差统计:")
+    print(f"最小值: {final_df['var_auc_range'].min():.4f}")
+    print(f"最大值: {final_df['var_auc_range'].max():.4f}")
+    print(f"平均值: {final_df['var_auc_range'].mean():.4f}")
     
     print(f"\n平均ACC标准差统计:")
     print(f"最小值: {final_df['avg_acc_std'].min():.4f}")
@@ -407,11 +437,21 @@ def process_all_files(root_dir):
     print(f"平均值: {final_df['avg_acc_std'].mean():.4f}")
     print(f"标准差: {final_df['avg_acc_std'].std():.4f}")
     
+    print(f"\nACC标准差的5折方差统计:")
+    print(f"最小值: {final_df['var_acc_std'].min():.4f}")
+    print(f"最大值: {final_df['var_acc_std'].max():.4f}")
+    print(f"平均值: {final_df['var_acc_std'].mean():.4f}")
+    
     print(f"\n平均ACC差值统计:")
     print(f"最小值: {final_df['avg_acc_range'].min():.4f}")
     print(f"最大值: {final_df['avg_acc_range'].max():.4f}")
     print(f"平均值: {final_df['avg_acc_range'].mean():.4f}")
     print(f"标准差: {final_df['avg_acc_range'].std():.4f}")
+    
+    print(f"\nACC差值的5折方差统计:")
+    print(f"最小值: {final_df['var_acc_range'].min():.4f}")
+    print(f"最大值: {final_df['var_acc_range'].max():.4f}")
+    print(f"平均值: {final_df['var_acc_range'].mean():.4f}")
     
     return {
         'raw_df': raw_df,
