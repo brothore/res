@@ -147,15 +147,28 @@ def process_single_file(file_path):
         # 计算统计指标
         auc_std = np.std(auc_list, ddof=1) if len(auc_list) > 1 else 0.0
         auc_mean = np.mean(auc_list)
+        auc_max = np.max(auc_list) if auc_list else np.nan
+        auc_min = np.min(auc_list) if auc_list else np.nan
+        auc_range = auc_max - auc_min if not (np.isnan(auc_max) or np.isnan(auc_min)) else np.nan
+        
         acc_mean = np.mean(acc_list) if acc_list else np.nan
         acc_std = np.std(acc_list, ddof=1) if len(acc_list) > 1 else 0.0
+        acc_max = np.max(acc_list) if acc_list else np.nan
+        acc_min = np.min(acc_list) if acc_list else np.nan
+        acc_range = acc_max - acc_min if not (np.isnan(acc_max) or np.isnan(acc_min)) else np.nan
         
         return {
             'auc_list': auc_list,
             'auc_std': auc_std,
             'auc_mean': auc_mean,
+            'auc_max': auc_max,
+            'auc_min': auc_min,
+            'auc_range': auc_range,
             'acc_mean': acc_mean,
             'acc_std': acc_std,
+            'acc_max': acc_max,
+            'acc_min': acc_min,
+            'acc_range': acc_range,
             'n_students': len(auc_list),
             'success': True,
             'error': None
@@ -166,8 +179,14 @@ def process_single_file(file_path):
             'auc_list': [],
             'auc_std': np.nan,
             'auc_mean': np.nan,
+            'auc_max': np.nan,
+            'auc_min': np.nan,
+            'auc_range': np.nan,
             'acc_mean': np.nan,
             'acc_std': np.nan,
+            'acc_max': np.nan,
+            'acc_min': np.nan,
+            'acc_range': np.nan,
             'n_students': 0,
             'success': False,
             'error': str(e)
@@ -280,15 +299,21 @@ def process_all_files(root_dir):
             'txt_file': txt_file,
             'auc_std': result['auc_std'],
             'auc_mean': result['auc_mean'],
+            'auc_max': result['auc_max'],
+            'auc_min': result['auc_min'],
+            'auc_range': result['auc_range'],
             'acc_mean': result['acc_mean'],
             'acc_std': result['acc_std'],
+            'acc_max': result['acc_max'],
+            'acc_min': result['acc_min'],
+            'acc_range': result['acc_range'],
             'n_students': result['n_students'],
             'success': result['success'],
             'error': result['error']
         })
         
         if result['success']:
-            print(f"成功: AUC_std={result['auc_std']:.4f}, AUC_mean={result['auc_mean']:.4f}, ACC_std={result['acc_std']:.4f}, n_students={result['n_students']}")
+            print(f"成功: AUC_std={result['auc_std']:.4f}, AUC_range={result['auc_range']:.4f}, ACC_std={result['acc_std']:.4f}, ACC_range={result['acc_range']:.4f}, n_students={result['n_students']}")
         else:
             print(f"失败: {result['error']}")
     
@@ -316,8 +341,14 @@ def process_all_files(root_dir):
         # 计算各项指标的平均值
         avg_auc_std = success_group['auc_std'].mean()
         avg_auc_mean = success_group['auc_mean'].mean()
+        avg_auc_max = success_group['auc_max'].mean()
+        avg_auc_min = success_group['auc_min'].mean()
+        avg_auc_range = success_group['auc_range'].mean()
         avg_acc_mean = success_group['acc_mean'].mean()
         avg_acc_std = success_group['acc_std'].mean()
+        avg_acc_max = success_group['acc_max'].mean()
+        avg_acc_min = success_group['acc_min'].mean()
+        avg_acc_range = success_group['acc_range'].mean()
         total_students = success_group['n_students'].sum()
         n_successful_folds = len(success_group)
         
@@ -326,8 +357,14 @@ def process_all_files(root_dir):
             'model': model,
             'avg_auc_std': avg_auc_std,
             'avg_auc_mean': avg_auc_mean,
+            'avg_auc_max': avg_auc_max,
+            'avg_auc_min': avg_auc_min,
+            'avg_auc_range': avg_auc_range,
             'avg_acc_mean': avg_acc_mean,
             'avg_acc_std': avg_acc_std,
+            'avg_acc_max': avg_acc_max,
+            'avg_acc_min': avg_acc_min,
+            'avg_acc_range': avg_acc_range,
             'total_students': total_students,
             'n_successful_folds': n_successful_folds,
             'success_rate': n_successful_folds / 5.0
@@ -358,11 +395,23 @@ def process_all_files(root_dir):
     print(f"平均值: {final_df['avg_auc_std'].mean():.4f}")
     print(f"标准差: {final_df['avg_auc_std'].std():.4f}")
     
+    print(f"\n平均AUC差值统计:")
+    print(f"最小值: {final_df['avg_auc_range'].min():.4f}")
+    print(f"最大值: {final_df['avg_auc_range'].max():.4f}")
+    print(f"平均值: {final_df['avg_auc_range'].mean():.4f}")
+    print(f"标准差: {final_df['avg_auc_range'].std():.4f}")
+    
     print(f"\n平均ACC标准差统计:")
     print(f"最小值: {final_df['avg_acc_std'].min():.4f}")
     print(f"最大值: {final_df['avg_acc_std'].max():.4f}")
     print(f"平均值: {final_df['avg_acc_std'].mean():.4f}")
     print(f"标准差: {final_df['avg_acc_std'].std():.4f}")
+    
+    print(f"\n平均ACC差值统计:")
+    print(f"最小值: {final_df['avg_acc_range'].min():.4f}")
+    print(f"最大值: {final_df['avg_acc_range'].max():.4f}")
+    print(f"平均值: {final_df['avg_acc_range'].mean():.4f}")
+    print(f"标准差: {final_df['avg_acc_range'].std():.4f}")
     
     return {
         'raw_df': raw_df,
